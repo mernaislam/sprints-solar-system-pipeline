@@ -7,6 +7,10 @@ on:
       - main
       - feature-branchA
 
+env:
+  MONGO_URI: ${{ vars.MONGO_URI}}
+  MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+  MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
 jobs:
   unit-testing:
@@ -19,7 +23,9 @@ jobs:
         exclude:
           - os: macos-latest
             nodejs-version: 18
+
     runs-on: ${{ matrix.os }}
+    
     steps: 
       - name: Checkout code
         uses: actions/checkout@v5
