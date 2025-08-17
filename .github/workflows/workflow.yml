@@ -121,7 +121,6 @@ jobs:
           echo Testing Image URL using wget
           wget -q -O - 127.0.0.1:3000/live | grep  live
 
-      
       - name: Build Docker file
         uses: docker/build-push-action@v6
         with:
@@ -129,4 +128,3 @@ jobs:
           tags: |
             ${{ vars.DOCKER_USERNAME }}:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}
-            
