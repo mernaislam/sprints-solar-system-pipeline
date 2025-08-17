@@ -1,0 +1,36 @@
+name: Solar System Workflow
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature-branchA
+
+
+jobs:
+  unit-testing:
+    name: Unit Testing
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest ,windows-latest]
+        nodejs-version: [18, 19, 20]
+
+        exclude:
+          - os: macos-latest
+            node-version: 18
+    runs-on: ${{ matrix.os }}
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js version - ${{ matrix.nodejs-version }}
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: ${{ matrix.nodejs-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
