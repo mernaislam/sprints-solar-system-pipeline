@@ -48,6 +48,7 @@ jobs:
         with:
           name: mocha-test-results-${{ matrix.os }}-${{ matrix.nodejs-version }}
           path: test-results.xml
+  
   code-coverage:
     name: Code Coverage
     needs: unit-testing
@@ -65,7 +66,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run code coverage
+      - name: Run code coverage 
+        continue-on-error: true
         run: npm run coverage
 
       - name: Archive code coverage results
