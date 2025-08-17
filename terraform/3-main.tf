@@ -22,7 +22,7 @@ module "eks" {
     cluster_name = "sprints-eks-cluster"
     cluster_version = "1.33"
     vpc_id = module.vpc.vpc_id
-    subnet_ids = module.vpc.private_subnet_ids
+    subnet_ids = module.vpc.public_subnet_ids
     node_groups = var.node_groups
     depends_on = [ module.vpc ]
 }

@@ -10,6 +10,7 @@ resource "aws_eks_cluster" "main" {
 
   vpc_config {
     subnet_ids = var.subnet_ids
+    security_group_ids = [aws_security_group.eks_sg.id]
   }
 
   depends_on = [
@@ -41,5 +42,37 @@ resource "aws_iam_role_policy_attachment" "cluster_policy" {
   role       = aws_iam_role.cluster.name
 }
 
+resource "aws_security_group" "eks_sg" {
+  name        = "stage_sg"
+  description = "Security group for EKS cluster"
+  vpc_id = aws_vpc.stage_vpc.id
 
+  ingress {
+    from_port   = 0
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
