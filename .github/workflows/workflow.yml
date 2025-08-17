@@ -105,7 +105,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-          tags: ${{ vars.DOCKER_USERNAME }}/solar-system:${{ github.sha }}
+          tags: ${{ vars.DOCKER_USERNAME }}/solar-system
 
       - name: Test Docker image
         run: |  
@@ -115,7 +115,7 @@ jobs:
           -e MONGO_USERNAME=$MONGO_USERNAME \
           -e MONGO_PASSWORD=$MONGO_PASSWORD \
           -e MONGO_URI=$MONGO_URI \
-          ${{ vars.DOCKER_USERNAME }}/solar-system:${{ github.sha }}
+          ${{ vars.DOCKER_USERNAME }}/solar-system
           export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
           echo $IP
           echo Testing Image URL using wget
@@ -126,5 +126,71 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ vars.DOCKER_USERNAME }}:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}
+            ${{ vars.DOCKER_USERNAME }}
+            ghcr.io/${{ github.repository_owner }}/solar-system
+
+    terraform:
+    name: Terraform Deployment
+    runs-on: ubuntu-latest 
+    needs: docker-build
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: hashicorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: "1.1.7"
+
+      - name: Terraform Init
+        run: terraform init 
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
+
+  deploy:
+    name: Deploy to EKS
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name solar-system-cluster
+
+
+      - name: Trigger App Deployment
+        uses: statsig-io/kubectl-via-eksctl@main
+        env:
+         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         aws_region: us-east-1
+         cluster: stage-eks-cluster
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+        working-directory: ./kubernetes

@@ -1,0 +1,19 @@
+apiversion: app/v1
+kind: Deployment
+metadata:
+  name: microservice-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: microservice
+  template:
+    metadata:
+      labels:
+        app: microservice
+    spec:
+      containers:
+        - name: microservice-container
+          image: ${{ vars.DOCKER_USERNAME }}/solar-system
+          ports:
+            - containerPort: 3000
