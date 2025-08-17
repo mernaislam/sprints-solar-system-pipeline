@@ -1,4 +1,4 @@
-apiversion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: microservice-deployment
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: microservice-container
-          image: ${{ vars.DOCKER_USERNAME }}/solar-system
+          image: ${{ vars.DOCKER_USERNAME }}/solar-system:latest
           ports:
             - containerPort: 3000

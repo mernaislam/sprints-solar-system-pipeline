@@ -105,7 +105,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-          tags: ${{ vars.DOCKER_USERNAME }}/solar-system
+          tags: ${{ vars.DOCKER_USERNAME }}/solar-system:latest
 
       - name: Test Docker image
         run: |  
@@ -115,7 +115,7 @@ jobs:
           -e MONGO_USERNAME=$MONGO_USERNAME \
           -e MONGO_PASSWORD=$MONGO_PASSWORD \
           -e MONGO_URI=$MONGO_URI \
-          ${{ vars.DOCKER_USERNAME }}/solar-system
+          ${{ vars.DOCKER_USERNAME }}/solar-system:latest
           export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
           echo $IP
           echo Testing Image URL using wget
@@ -193,7 +193,7 @@ jobs:
           kubectl apply -f deployment.yml
           kubectl apply -f service.yml
         working-directory: ./kubernetes
-        
+
       - name: Verify Deployment
         run: |
           kubectl get pods  
