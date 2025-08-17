@@ -46,7 +46,7 @@ jobs:
         if: steps.nodejs-unit-testing-run-tests.outcome == 'success' || steps.nodejs-unit-testing-run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: mocha-test-results
+          name: mocha-test-results-${{ matrix.os }}-${{ matrix.nodejs-version }}
           path: test-results.xml
 
       # - name: Download test results
