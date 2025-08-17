@@ -149,21 +149,16 @@ jobs:
         with:
           terraform_version: "1.1.7"
 
-      - name: Terraform Force Unlock (cleanup stale lock)
-        run: terraform force-unlock -force 154a13e4-c568-d443-d773-9772fc80653b || true
-        working-directory: ./terraform
-
-
       - name: Terraform Init
         run: terraform init 
         working-directory: ./terraform
 
       - name: Terraform Plan 
-        run: terraform plan -lock=false
+        run: terraform plan
         working-directory: ./terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -lock=false
+        run: terraform apply -auto-approve
         working-directory: ./terraform
 
   deploy:
@@ -195,7 +190,7 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+          kubectl apply -f deployment.yml
+          kubectl apply -f service.yml
         working-directory: ./kubernetes
 
