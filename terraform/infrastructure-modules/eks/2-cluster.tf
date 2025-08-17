@@ -45,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "cluster_policy" {
 resource "aws_security_group" "eks_sg" {
   name        = "stage_sg"
   description = "Security group for EKS cluster"
-  vpc_id = aws_vpc.stage_vpc.id
+  vpc_id = module.vpc.vpc_id
 
   ingress {
     from_port   = 0
