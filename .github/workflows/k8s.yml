@@ -35,7 +35,6 @@ jobs:
                  region: us-east-1
                  cluster: sprints-eks-cluster
 
-
             - name: Deploy k8s deployments
               run: |
                kubectl apply -f deployment.yml
