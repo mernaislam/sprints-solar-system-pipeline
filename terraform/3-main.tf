@@ -9,7 +9,7 @@ terraform {
 }
 
 module "vpc" {
-    source = "infrastructure-modules/vpc"
+    source = "./infrastructure-modules/vpc"
     project = "sprints"
     private_subnets = ["10.0.128.0/20", "10.0.144.0/20"]
     public_subnets = ["10.0.0.0/20", "10.0.16.0/20"]
@@ -18,7 +18,7 @@ module "vpc" {
 }
 
 module "eks" {
-    source = "infrastructure-modules/eks"
+    source = "./infrastructure-modules/eks"
     cluster_name = "sprints-eks-cluster"
     cluster_version = "1.33"
     vpc_id = module.vpc.vpc_id
