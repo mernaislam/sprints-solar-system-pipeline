@@ -153,8 +153,8 @@ jobs:
         run: terraform init 
         working-directory: ./terraform
 
-      - name: Terraform Plan
-        run: terraform plan
+      - name: Terraform Plan 
+        run: terraform plan -lock=false
         working-directory: ./terraform
 
       - name: Terraform Apply
