@@ -18,7 +18,7 @@ jobs:
 
         exclude:
           - os: macos-latest
-          - nodejs-version: 18
+            nodejs-version: 18
     runs-on: ${{ matrix.os }}
     steps: 
       - name: Checkout code
