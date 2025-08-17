@@ -1,9 +1,9 @@
-name: soalr system workflow
+name: solar system workflow
 on:
     workflow_dispatch:
     push:
        branches:
-            - feature-brancheA
+            - feature-branchA
             - main
 
 jobs:
@@ -21,18 +21,18 @@ jobs:
               with:
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: us-west-2
+                  aws-region: us-east-1
 
             - name: updat kubeconfig
               run: | 
-                    aws eks --region us-west-2 update-kubeconfig --name sprints-eks-cluster
+                    aws eks --region us-east-1 update-kubeconfig --name sprints-eks-cluster
 
             - name: Trigger app deployment
               uses: statsig-io/kubectl-via-eksctl@main
               env:
                  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                  aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                 region: us-west-2
+                 region: us-east-1
                  cluster: sprints-eks-cluster
 
 
