@@ -5,7 +5,6 @@ on:
        branches:
             - feature-branchA
             - main
-
 jobs:
     deploy:
         name: deploy to EKS
