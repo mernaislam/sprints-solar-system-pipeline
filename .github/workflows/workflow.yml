@@ -153,6 +153,7 @@ jobs:
         run: terraform force-unlock -force 154a13e4-c568-d443-d773-9772fc80653b || true
         working-directory: ./terraform
 
+
       - name: Terraform Init
         run: terraform init 
         working-directory: ./terraform
