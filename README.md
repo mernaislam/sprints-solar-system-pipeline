@@ -1,49 +1,51 @@
-# Solar System NodeJS Application
+# Solar System Pipeline (Node.js + EKS)
 
-A simple HTML+MongoDB+NodeJS project to display Solar System and it's planets.
+A simple Node.js web app that shows the Solar System, fully automated through CI/CD with GitHub Actions, Terraform-provisioned AWS EKS, and Kubernetes manifests.
 
----
-## Requirements
+## Repository layout
 
-For development, you will only need Node.js and NPM installed in your environement.
+```
+.
+├── app.js                   # Node.js app entry
+├── app-controller.js        # Controller logic
+├── app-test.js              # Unit tests
+├── index.html               # UI
+├── images/                  # Static assets
+├── Dockerfile               # App container image
+├── kubernetes/
+│   ├── deployment.yml       # K8s Deployment (3 replicas)
+│   └── service.yml          # K8s Service (type LoadBalancer)
+├── terraform/
+│   ├── 1-providers.tf       # (Provider/backends if used)
+│   ├── 2-variables.tf       # Node group configuration (size/types)
+│   ├── 3-main.tf            # Root module wiring (VPC + EKS)
+│   ├── 4.outputs.tf         # Outputs (if any)
+│   └── infrastructure-modules/
+│       ├── vpc/             # Custom VPC module (VPC, subnets, routes, IGW, NAT)
+│       └── eks/             # Custom EKS module (cluster, node groups)
+└── .github/workflows/workflow.yml  # CI/CD pipeline
+```
 
-### Node
-- #### Node installation on Windows
+## Prerequisites
 
-  Just go on [official Node.js website](https://nodejs.org/) and download the installer.
-Also, be sure to have `git` available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
+- Node.js 18+
+- Docker (for local builds)
+- AWS account, credentials with permissions to manage VPC/EKS/EC2/IAM/ELB/S3/DynamoDB
+- kubectl and awscli installed locally (only if deploying manually outside CI)
 
-- #### Node installation on Ubuntu
+## CI/CD (GitHub Actions)
 
-  You can install nodejs and npm easily with apt install, just run the following commands.
+Workflow: `.github/workflows/workflow.yml`
 
-      $ sudo apt install nodejs
-      $ sudo apt install npm
+Jobs (in order):
+- Unit tests (Node 18/19/20 on multiple OS)
+- Code coverage (Node 18)
+- Docker build and push (Docker Hub + GHCR)
+- Terraform (create/update EKS + VPC in AWS)
+- Deploy to EKS (apply `kubernetes/deployment.yml` and `kubernetes/service.yml`)
 
-- #### Other Operating Systems
-  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and the [official NPM website](https://npmjs.org/).
+Required repo variables/secrets:
+- Vars: `DOCKER_USERNAME`, `MONGO_URI`, `MONGO_USERNAME`
+- Secrets: `DOCKER_PASSWORD`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `MONGO_PASSWORD`
 
-If the installation was successful, you should be able to run the following command.
-
-    $ node --version
-    v8.11.3
-
-    $ npm --version
-    6.1.0
-
----
-## Install Dependencies from `package.json`
-    $ npm install
-
-## Run Unit Testing
-    $ npm test
-
-## Run Code Coverage
-    $ npm run coverage
-
-## Run Application
-    $ npm start
-
-## Access Application on Browser
-    http://localhost:3000/
-
+Trigger: on push to `main` (and `feature-branchA`) or manual dispatch.
