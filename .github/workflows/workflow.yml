@@ -196,5 +196,9 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          kubectl get pods  
+          kubectl get nodes -o wide
+          kubectl get pods -o wide
+          kubectl describe pod $(kubectl get pod -l app=microservice -o jsonpath='{.items[0].metadata.name}') || true
           kubectl get svc
+          kubectl describe svc microservice-service || true
+          kubectl get events --sort-by=.lastTimestamp | tail -n 100 || true
