@@ -28,3 +28,8 @@ variable "azs" {
     description = "List of availability zones to use for the VPC"
     type        = list(string)  
 }
+
+variable "cluster_name" {
+  description = "EKS cluster name used for subnet tagging"
+  type        = string
+}

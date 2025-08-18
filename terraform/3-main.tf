@@ -15,6 +15,7 @@ module "vpc" {
     public_subnets = ["10.0.0.0/20", "10.0.16.0/20"]
     environment = "dev"
     azs = ["us-east-1a", "us-east-1b"]
+    cluster_name = "sprints-eks-cluster"
 }
 
 module "eks" {

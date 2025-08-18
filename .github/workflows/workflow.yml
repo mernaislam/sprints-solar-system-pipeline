@@ -160,54 +160,10 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./terraform
-      
-      - name: Get Terraform outputs
-        id: tf_outputs
-        run: |
-          VPC_ID=$(terraform output -raw vpc_id)
-          echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
-        working-directory: ./terraform
-
-  install-controller:
-    name: Install AWS Load Balancer Controller
-    needs: terraform
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4.3.1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Update kubeconfig
-        run: aws eks --region us-east-1 update-kubeconfig --name sprints-eks-cluster
-
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-
-      - name: Add EKS Helm repo
-        run: |
-          helm repo add eks https://aws.github.io/eks-charts
-          helm repo update
-
-      - name: Install AWS Load Balancer Controller
-        run: |
-          kubectl create namespace kube-system || true
-          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-            -n kube-system \
-            --set clusterName=sprints-eks-cluster \
-            --set serviceAccount.create=false \
-            --set region=us-east-1 \
-            --set vpcId=$VPC_ID \
-            --set image.tag=v2.6.1
-
 
   deploy:
     name: Deploy to EKS
-    needs: install-controller
+    needs: terraform
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
