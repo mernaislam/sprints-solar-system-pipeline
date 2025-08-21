@@ -8,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-ENV MONGO_USERNAME="superuser"
-ENV MONGO_PASSWORD="SuperPassword"
-ENV MONGO_URI="mongodb+srv://supercluster.d83jj.mongodb.net/superData"
+ENV MONGO_USERNAME=""
+ENV MONGO_PASSWORD=""
+ENV MONGO_URI=""
 
 EXPOSE 3000
 
