@@ -13,7 +13,7 @@ jobs:
     name: deploy to EKS
     runs-on: ubuntu-latest
     env: 
-      AWS_REGION: us-west-2
+      AWS_REGION: us-east-1
       EKS_CLUSTER_NAME: sprints-eks-cluster
       GRAFANA_ADMIN_PASSWORD: ${{ secrets.grafana_admin_password }}
 
@@ -27,11 +27,11 @@ jobs:
           with:
               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              aws-region: us-west-2
+              aws-region: us-east-1
 
         - name: updat kubeconfig
           run: | 
-                aws eks --region us-west-2 update-kubeconfig --name sprints-eks-cluster
+                aws eks --region us-east-1 update-kubeconfig --name sprints-eks-cluster
 
         - name: Output monitoring namespace YAML
           run: kubectl create namespace monitoring --dry-run=client -o yaml
