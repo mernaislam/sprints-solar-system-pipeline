@@ -33,17 +33,9 @@ jobs:
           run: | 
                 aws eks --region us-west-2 update-kubeconfig --name stage-eks-cluster
 
-        - name: Trigger app deployment
-          uses: statsig-io/kubectl-via-eksctl@main
-          env:
-              aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-              aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              region: us-west-2
-              cluster: stage-eks-cluster
-
         - name: Output monitoring namespace YAML
           run: kubectl create namespace monitoring --dry-run=client -o yaml
-          
+
         - name: Create monitoring namespace
           run: kubectl create namespace monitoring || true
 
